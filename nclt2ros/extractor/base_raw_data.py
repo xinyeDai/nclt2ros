@@ -10,12 +10,14 @@ class BaseRawData:
             BaseRawData('2013-01-10')
 
     """
+
     def __init__(self, date):
 
         self.date = date
 
         RAW_DATA_PATH_DFLT = ROOT_DIR + '/nclt2ros/raw_data/'
-        RAW_DATA_PATH_DFLT = '/home/christian/nclt2ros/raw_data/'  # TODO remove, only for debugging
+        RAW_DATA_PATH_DFLT = ('/home/xyd/PycharmProjects/ncl2rosbag_ws/raw_data/home/xyd/PycharmProjects/'
+                              'ncl2rosbag_ws/raw_data/')  # TODO remove, only for debugging
         self.raw_data_path = rospy.get_param('~raw_data_path', RAW_DATA_PATH_DFLT)
 
         # init raw directory

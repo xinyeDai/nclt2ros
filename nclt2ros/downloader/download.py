@@ -12,7 +12,10 @@ class Download:
 
     def __init__(self, date, raw_data_path, lb3=False, sen=False, hokuyo=False, vel=False, gt=False, gt_cov=False):
 
-        self.download_url_dir = 'http://robots.engin.umich.edu/nclt'
+        # https://s3.us-east-2.amazonaws.com/nclt.perl.engin.umich.edu/sensor_data/2013-01-10_sen.tar.gz
+        #                           http://robots.engin.umich.edu/nclt/sensor_data/2013-01-10_sen.tar.gz
+        # https://s3.us-east-2.amazonaws.com/nclt.perl.engin.umich.edu/velodyne_data/2013-01-10_vel.tar.gz
+        self.download_url_dir = 'https://s3.us-east-2.amazonaws.com/nclt.perl.engin.umich.edu'
         self.dates = ['2012-01-08', '2012-01-15', '2012-01-22', '2012-02-02', '2012-02-04', '2012-02-05', '2012-02-12',
                       '2012-02-18', '2012-02-19', '2012-03-17', '2012-03-25', '2012-03-31', '2012-04-29', '2012-05-11',
                       '2012-05-26', '2012-06-15', '2012-08-04', '2012-08-20', '2012-09-28', '2012-10-28', '2012-11-04',
@@ -118,7 +121,8 @@ class Download:
         """fetching the raw sensors data with wget and the continue flag for later continuation
         """
 
-        cmd = ['wget', '--continue', '%s/sensor_data/%s_sen.tar.gz' % (self.download_url_dir, self.date), '-P', 'sensor_data']
+        cmd = ['wget', '--continue', '%s/sensor_data/%s_sen.tar.gz' % (self.download_url_dir, self.date), '-P',
+               'sensor_data']
         cmd_str = ' '.join(cmd)
         rospy.loginfo("Calling: %s" % cmd_str)
         subprocess.call(cmd)
@@ -127,7 +131,8 @@ class Download:
         """fetching the raw velodyne data with wget and the continue flag for later continuation
         """
 
-        cmd = ['wget', '--continue', '%s/velodyne_data/%s_vel.tar.gz' % (self.download_url_dir, self.date), '-P', 'velodyne_data']
+        cmd = ['wget', '--continue', '%s/velodyne_data/%s_vel.tar.gz' % (self.download_url_dir, self.date), '-P',
+               'velodyne_data']
         cmd_str = ' '.join(cmd)
         rospy.loginfo("Calling: %s" % cmd_str)
         subprocess.call(cmd)
@@ -136,7 +141,8 @@ class Download:
         """fetching the raw hokuyo data with wget and the continue flag for later continuation
         """
 
-        cmd = ['wget', '--continue', '%s/hokuyo_data/%s_hokuyo.tar.gz' % (self.download_url_dir, self.date), '-P', 'hokuyo_data']
+        cmd = ['wget', '--continue', '%s/hokuyo_data/%s_hokuyo.tar.gz' % (self.download_url_dir, self.date), '-P',
+               'hokuyo_data']
         cmd_str = ' '.join(cmd)
         rospy.loginfo("Calling: %s" % cmd_str)
         subprocess.call(cmd)
@@ -145,7 +151,8 @@ class Download:
         """fetching the raw ground truth pose data with wget and the continue flag for later continuation
         """
 
-        cmd = ['wget', '--continue', '%s/ground_truth/groundtruth_%s.csv' % (self.download_url_dir, self.date), '-P', 'ground_truth']
+        cmd = ['wget', '--continue', '%s/ground_truth/groundtruth_%s.csv' % (self.download_url_dir, self.date), '-P',
+               'ground_truth']
         cmd_str = ' '.join(cmd)
         rospy.loginfo("Calling: %s" % cmd_str)
         subprocess.call(cmd)
@@ -154,7 +161,8 @@ class Download:
         """fetching the raw ground truth covariance data with wget and the continue flag for later continuation
         """
 
-        cmd = ['wget', '--continue', '%s/covariance/cov_%s.csv' % (self.download_url_dir, self.date), '-P', 'ground_truth_covariance']
+        cmd = ['wget', '--continue', '%s/covariance/cov_%s.csv' % (self.download_url_dir, self.date), '-P',
+               'ground_truth_covariance']
         cmd_str = ' '.join(cmd)
         rospy.loginfo("Calling: %s" % cmd_str)
         subprocess.call(cmd)

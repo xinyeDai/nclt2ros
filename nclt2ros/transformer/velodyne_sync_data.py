@@ -5,6 +5,7 @@ import numpy as np
 import geometry_msgs.msg
 import tf2_msgs.msg
 import tf.transformations
+import sys
 
 from sensor_msgs.msg import PointCloud2, PointField
 from nclt2ros.extractor.base_raw_data import BaseRawData
@@ -35,7 +36,7 @@ class VelodyneSyncData(BaseRawData, BaseConvert):
         else:
             raise ValueError('velodyne_data not exists')
 
-        timestamps_microsec = sorted([long(os.path.splitext(f)[0]) for f in files if f.endswith('.bin')])
+        timestamps_microsec = sorted([os.path.splitext(f)[0] for f in files if f.endswith('.bin')])
         bin_files = sorted([f for f in files if f.endswith('.bin')])
 
         return timestamps_microsec, bin_files
@@ -59,7 +60,7 @@ class VelodyneSyncData(BaseRawData, BaseConvert):
 
         return x, y, z
 
-    def read_next_velodyne_sync_packet(self, file):
+    def read_next_velodyne_sync_packet(self, file, timestamp):
         """reads one velodyne sync binary file, equals one revolution of the velodyne sensor
 
         :param file: one binary file from the velodyne_sync directory
@@ -69,28 +70,30 @@ class VelodyneSyncData(BaseRawData, BaseConvert):
 
         try:
             os.chdir(self.velodyne_sync_data_dir)
-            f_bin = open(file, "r")
-
+            f_bin = open(file, "rb")
+            print('***************file: {0}******************'.format(file))
             hits = []
             while True:
 
                 x_str = f_bin.read(2)
-                if x_str == '':  # eof
+                if x_str == '' or len(x_str) < 1:
                     break
-
+                # print('len of x_str: {0}'.format(len(x_str)))
                 x         = struct.unpack('<H', x_str)[0]
                 y         = struct.unpack('<H', f_bin.read(2))[0]
                 z         = struct.unpack('<H', f_bin.read(2))[0]
                 intensity = struct.unpack('B', f_bin.read(1))[0]
+                
                 laser_id  = struct.unpack('B', f_bin.read(1))[0]
+                # print('x:{0}, y:{1}, z:{2}, intensity:{3}, laser_id:{4}'.format(x, y, z, intensity, laser_id))
 
                 x, y, z = self.convert_velodyne(x, y, z)
                 y = y * -1
                 z = z * -1
+
                 hits += [x, y, z, intensity, laser_id]
-
+            print('**************** hits: {0}******************'.format(hits[:30]))
             f_bin.close()
-
             return hits
 
         except Exception as e:
@@ -107,7 +110,7 @@ class VelodyneSyncData(BaseRawData, BaseConvert):
         """
 
         # create a ros timestamp
-        timestamp = rospy.Time.from_sec(utime / 1e6)
+        timestamp = rospy.Time.from_sec(int(utime) / 1e6)
         points = np.array(hits)
 
         # get velodyne and base link
@@ -117,6 +120,7 @@ class VelodyneSyncData(BaseRawData, BaseConvert):
         # create a PointCloud2 message
         pc2_msg = PointCloud2()
         pc2_msg.header.stamp = timestamp
+        print("pc2_msg.header.stamp: {0}".format(pc2_msg.header.stamp))
         pc2_msg.header.frame_id = velodyne_link
 
         num_values = points.shape[0]
@@ -137,17 +141,20 @@ class VelodyneSyncData(BaseRawData, BaseConvert):
             PointField('x', 0, PointField.FLOAT32, 1),
             PointField('y', 4, PointField.FLOAT32, 1),
             PointField('z', 8, PointField.FLOAT32, 1),
-            PointField('i', 12, PointField.FLOAT32, 1),
+            PointField('intensity', 12, PointField.FLOAT32, 1),
+            # PointField('time', 16, PointField.FLOAT32, 1),
             PointField('l', 16, PointField.FLOAT32, 1)
         ]
 
         pc2_msg.is_bigendian = False
         pc2_msg.point_step = NUM_FIELDS * FLOAT_SIZE_BYTES
 
-        pc2_msg.row_step = pc2_msg.point_step * num_points
+        pc2_msg.row_step = np.uint32(pc2_msg.point_step * num_points)
+        print("pc2_msg.row_step: {0}, pc_msg.row_step type: {1}".format(pc2_msg.row_step, type(pc2_msg.row_step)))
         pc2_msg.is_dense = False
 
-        pc2_msg.width = num_points
+        pc2_msg.width = np.uint32(num_points)
+        print("pc2_msg.width: {0}, pc2_msg.width type: {1}".format(pc2_msg.width, type(pc2_msg.width)))
         pc2_msg.data = np.asarray(points, np.float32).tostring()
 
         # create base_link velodyne_link static transformer

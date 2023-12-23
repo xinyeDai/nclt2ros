@@ -1,7 +1,7 @@
 import os
 import tarfile
 import rospy
-from base_raw_data import BaseRawData
+from .base_raw_data import BaseRawData
 
 
 class Extract(BaseRawData):

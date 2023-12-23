@@ -3,16 +3,16 @@
     <node name="nclt2rosbag" pkg="nclt2ros" type="nclt2rosbag" output="screen">
 
         <param name="date"                  value="2013-01-10"/>
-        <param name="raw_data_path"         value="/home/christian/nclt2ros/raw_data" />
-        <param name="rosbag_output_path"    value="/home/christian/nclt2ros/rosbags" />
+        <param name="raw_data_path"         value="/home/xyd/PycharmProjects/ncl2rosbag_ws/raw_data" />
+        <param name="rosbag_output_path"    value="/home/xyd/PycharmProjects/ncl2rosbag_ws/rosbags" />
         <param name="bag_name"              value="nclt" />
         <param name="cam_folder"            value="5" />
 
         # specify data to convert
-        <param name="lb3"                   value="True" />
+        <param name="lb3"                   value="False" />
         <param name="sen"                   value="True" />
         <param name="vel"                   value="True" />
-        <param name="hokuyo"                value="True" />
+        <param name="hokuyo"                value="False" />
         <param name="gt"                    value="True" />
 
         # topic names

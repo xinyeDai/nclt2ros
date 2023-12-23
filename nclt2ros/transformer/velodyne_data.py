@@ -71,7 +71,7 @@ class VelodyneData(BaseRawData, BaseConvert):
                 return -1, None
 
             if not self.verify_magic(magic):
-                print "Could not verify magic"
+                print('velodyne magic number not found')
                 return -1, None
 
             num_hits = struct.unpack('<I', self.f_bin_velodyne.read(4))[0]

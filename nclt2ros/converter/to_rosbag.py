@@ -131,6 +131,7 @@ class ToRosbag(BaseRawData, BaseConvert):
         # load velodyne sync data
         if self.vel:
             vel_sync_timestamps_microsec, vel_sync_bin_files = self.velodyne_sync_data.get_velodyne_sync_timestamps_and_files()
+            print("vel_sync_timestamps_microsec: {0}, vel_sync_bin_files: {1}".format(type(vel_sync_timestamps_microsec), type(vel_sync_bin_files)))
 
         # load image data
         if self.cam_folder is not None and self.lb3:
@@ -175,7 +176,7 @@ class ToRosbag(BaseRawData, BaseConvert):
                     next_packet = "hok30"
 
             if self.vel:
-                if i_vel < len(vel_sync_timestamps_microsec) and (vel_sync_timestamps_microsec[i_vel] < next_utime or next_utime < 0):
+                if i_vel < len(vel_sync_timestamps_microsec) and (int(vel_sync_timestamps_microsec[i_vel]) < int(next_utime) or next_utime < 0):
                     next_utime = vel_sync_timestamps_microsec[i_vel]
                     next_packet = "vel_sync"
 
@@ -245,7 +246,7 @@ class ToRosbag(BaseRawData, BaseConvert):
             elif next_packet == "vel_sync":
                 # print("vel_sync")
                 try:
-                    hits = self.velodyne_sync_data.read_next_velodyne_sync_packet(vel_sync_bin_files[i_vel])
+                    hits = self.velodyne_sync_data.read_next_velodyne_sync_packet(vel_sync_bin_files[i_vel], vel_sync_timestamps_microsec[i_vel])
                 except ValueError:
                     rospy.logerr("error in sync velodyne packet")
 
@@ -255,7 +256,7 @@ class ToRosbag(BaseRawData, BaseConvert):
                 i_vel += 1
 
             elif next_packet == "img":
-                if self.cam_folder is 'all':
+                if self.cam_folder == 'all':
                     for camera_id in range(self.num_cameras):
                         cam_file = os.path.join(self.images_lb3_dir, 'Cam' + str(camera_id), str(next_utime) + '.tiff')
                         timestamp, image_msg, tf_static_msg = self.image_data.write_images(utime=next_utime, cam_file=cam_file)
