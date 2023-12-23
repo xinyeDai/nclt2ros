@@ -154,7 +154,8 @@ def write_ms25(ms25, ms25_euler, i, bag):
             p = (ms25_euler[i, 2] + ms25_euler[i, 2]) * 0.5
             h = (ms25_euler[i, 3] + ms25_euler[i, 3]) * 0.5
 
-            r_q = R.r = R.from_euler('xyz', [h, p, r], degrees=0)
+            # r_q = R.r = R.from_euler('xyz', [h, p, r], degrees=0)
+            r_q = R.from_euler('xyz', [h, p, r], degrees=0)
             r_lid = r_extR * r_q * r_extR_T
             q_lid = r_lid.as_quat()
             timestamp = rospy.Time.from_sec((utime + utime_last) / 2e6)
