@@ -4,7 +4,7 @@ import subprocess
 
 
 class Download:
-    """Class to download the NCLT Dataset from http://robots.engin.umich.edu/nclt/
+    """Class to download the NCLT Dataset from https://s3.us-east-2.amazonaws.com/nclt.perl.engin.umich.edu
 
     USAGE:
             Download(date='2013-01-10', raw_data_path='/home/christian/nclt2ros/raw_data', gt=True)

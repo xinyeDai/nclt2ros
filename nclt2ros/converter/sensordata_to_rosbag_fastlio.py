@@ -352,7 +352,8 @@ def write_vel(f_vel,bag,vel_path):
             if offset_time + last_time >= utime:
                 offset_time = utime - last_time
             off_t = float(offset_time)
-            data.append([x, y, z, offset_time, l])
+            # data.append([x, y, z, offset_time, l])
+            data.append([x, y, z, i, offset_time, l])  # Added i for 'intensity' field
             # if l == 31:
             #     print(l,offset_time_base + dt * N, int(offset_time_base + dt * N))
             # print(float(offset_time))
@@ -371,10 +372,10 @@ def write_vel(f_vel,bag,vel_path):
             fields = [PointField('x', 0, PointField.FLOAT32, 1),
                     PointField('y', 4, PointField.FLOAT32, 1),
                     PointField('z', 8, PointField.FLOAT32, 1),
-                    # PointField('intensity', 12, PointField.FLOAT32, 1),
+                    PointField('intensity', 12, PointField.FLOAT32, 1),
                     PointField('time', 16, PointField.FLOAT32, 1),
                     PointField('ring', 20, PointField.UINT16, 1)]
-            pcl_msg = pcl2.create_cloud(header, fields, data)
+            pcl_msg = pcl2.create_cloud(header, fields, data) # 此处把data转换成pcl2格式
             pcl_msg.is_dense = True
             bag.write("points_raw", pcl_msg, t=pcl_msg.header.stamp)
             last_time = utime
